@@ -1,0 +1,1521 @@
+
+<!DOCTYPE html>
+<html lang="zxx">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>Prometheus - Admin</title>
+
+    
+    <link href="https://res.cloudinary.com/prometheusapi/image/upload/v1639483508/unnamed_fvkitq.png" rel="icon">
+    <link href="https://res.cloudinary.com/prometheusapi/image/upload/v1639483508/unnamed_fvkitq.png" rel="apple-touch-icon">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://demo.dashboardpack.com/cryptocurrency-html/css/bootstrap.min.css" />
+    <!-- themefy CSS -->
+    <link rel="stylesheet" href="https://demo.dashboardpack.com/cryptocurrency-html/vendors/themefy_icon/themify-icons.css" />
+    <!-- select2 CSS -->
+    <link rel="stylesheet" href="https://demo.dashboardpack.com/cryptocurrency-html/vendors/niceselect/css/nice-select.css" />
+    <!-- owl carousel CSS -->
+    <link rel="stylesheet" href="https://demo.dashboardpack.com/cryptocurrency-html/vendors/owl_carousel/css/owl.carousel.css" />
+    <!-- gijgo css -->
+    <link rel="stylesheet" href="https://demo.dashboardpack.com/cryptocurrency-html/vendors/gijgo/gijgo.min.css" />
+    <!-- font awesome CSS -->
+    <link rel="stylesheet" href="https://demo.dashboardpack.com/cryptocurrency-html/vendors/font_awesome/css/all.min.css" />
+    <link rel="stylesheet" href="https://demo.dashboardpack.com/cryptocurrency-html/vendors/tagsinput/tagsinput.css" />
+
+    <!-- date picker -->
+     <link rel="stylesheet" href="https://demo.dashboardpack.com/cryptocurrency-html/vendors/datepicker/date-picker.css" />
+
+     <link rel="stylesheet" href="https://demo.dashboardpack.com/cryptocurrency-html/vendors/vectormap-home/vectormap-2.0.2.css" />
+     
+     <!-- scrollabe  -->
+     <link rel="stylesheet" href="https://demo.dashboardpack.com/cryptocurrency-html/vendors/scroll/scrollable.css" />
+    <!-- datatable CSS -->
+    <link rel="stylesheet" href="https://demo.dashboardpack.com/cryptocurrency-html/vendors/datatable/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" href="https://demo.dashboardpack.com/cryptocurrency-html/vendors/datatable/css/responsive.dataTables.min.css" />
+    <link rel="stylesheet" href="https://demo.dashboardpack.com/cryptocurrency-html/vendors/datatable/css/buttons.dataTables.min.css" />
+    <!-- text editor css -->
+    <link rel="stylesheet" href="https://demo.dashboardpack.com/cryptocurrency-html/vendors/text_editor/summernote-bs4.css" />
+    <!-- morris css -->
+    <link rel="stylesheet" href="https://demo.dashboardpack.com/cryptocurrency-html/vendors/morris/morris.css">
+    <!-- metarial icon css -->
+    <link rel="stylesheet" href="https://demo.dashboardpack.com/cryptocurrency-html/vendors/material_icon/material-icons.css" />
+
+    <!-- menu css  -->
+    <link rel="stylesheet" href="https://demo.dashboardpack.com/cryptocurrency-html/css/metisMenu.css">
+    <!-- style CSS -->
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="https://demo.dashboardpack.com/cryptocurrency-html/css/colors/default.css" id="colorSkinCSS">
+</head>
+<body class="crm_body_bg">
+    
+
+
+<!-- main content part here -->
+ <!--image changer and picovoice-->
+ <script src="https://unpkg.com/@picovoice/porcupine-web-en-worker/dist/iife/index.js"></script>
+    <script src="https://unpkg.com/@picovoice/web-voice-processor/dist/iife/index.js"></script>
+    <script type="application/javascript">
+        function keywordDetectionCallback(keyword) {
+          console.log(`Porcupine detected ${keyword}`);
+        }
+  
+        function processErrorCallback(error) {
+          console.error(error); 
+        }
+  
+        async function startPorcupine() {
+          console.log("Porcupine is loading. Please wait...");
+          const accessKey = "h51bn9hlit8gkeqOdA+f42NNBYrHIHYJSg6+tA9whPGnM9ZU1XsFLA=="// AccessKey string obtained from Picovoice Console (picovoice.ai/console/)
+          let ppnEn = await PorcupineWebEnWorker.PorcupineWorkerFactory.create(
+            accessKey, 
+            [{builtin: "Picovoice", sensitivity: 0.65},],
+            keywordDetectionCallback,
+            processErrorCallback
+            );
+  
+          console.log("Porcupine worker ready!");
+  
+          console.log("WebVoiceProcessor initializing. Microphone permissions requested ...");
+  
+          try {
+            let webVp = await window.WebVoiceProcessor.WebVoiceProcessor.init({
+              engines: [ppnEn],
+            });
+            console.log("WebVoiceProcessor ready and listening!");
+          } catch (e) {
+            console.log("WebVoiceProcessor failed to initialize: " + e);
+          }
+        }
+  
+        document.addEventListener("DOMContentLoaded", function () {
+          startPorcupine();
+        });
+      </script>
+    <script>
+        function changeImage() {
+          var image = document.getElementById('myImage');
+          if (image.src.match("bulbon")) {
+            image.src = "pic_bulboff.png";
+          } else {
+            image.src = "pic_bulbon.png";
+          }
+        }
+    </script>
+    <script>
+        const btn = document.querySelector('.talk');
+    const content = document.querySelector('.content');
+    
+    //add arrays/strings to intent(recognized speeches)
+    const greetings = [
+        'I am doing fine thank you. hope you are to',
+        'I have had better days.',
+        'i am not so bad my self'
+    ];
+    const weather = [
+        'you can check it out yourself',
+        'Why do you need to know the weather, you rarely come outside the house. You lazy bastard.'
+    
+    ];
+    const name = [
+        'My name is jessy, an artificial intelligence',
+        'I am jessy, an artificial intelligence',
+    
+    ];
+    const jessy = [
+        'yes my name',
+        'i am',
+        'do not mention my name in vain'
+    ];
+    const joke = [
+        'Women really know how to hold a grudge. My wife asked me to pass her a lip balm. And by mistake, I gave her a tube of Super Glue. It’s been a month now and she’s still not speaking to me'
+        ,'Today, my son came to me and gave me a hug – out of the blue. I was very pleasantly surprised – that is, until I heard him tell his father, “You’re right. She did gain weight.”'
+        ,
+        'What do you get when you cross-breed a shark and a cow? I have no idea but I wouldn’t try milking it.' 
+    ];
+    const God = [
+        'in monotheistic thought, god is conceived of as the supreme being, creator deity, and principal object of faith'
+        ,'god is usually conceived as being omniscient (all-knowing), omnipotent (all-powerful), omnipresent (all-present) and as having an eternal and necessary existence.'
+    ];
+    const love = [
+        'i am selfish, impatient and a little insecure. I make mistakes, I am out of control and at times hard to handle. if you can not handle me at my worst, then you sure as hell do not deserve me at my best'
+        ,'Being deeply loved by someone gives you strength, while loving someone deeply gives you courage'
+        ,'There is never a time or place for true love. It happens accidentally, in a heartbeat, in a single flashing, throbbing moment'
+    ];
+    const paul = [
+        'Paul is my creator. my code consists of three programming languages, html,css and java script',
+        'Paul created me. i owe him alot for he teaches me new things everyday'
+    
+    ];
+    const bible = [
+        'Matthew chapter 6 verse 24. no one can serve two masters, for either he will hate the one and love the other, or he will be devoted to the one and despise the other. You cannot serve God and mone'
+        ,'Psalm chapter 46 verse 1 to 3. god is our refuge and strength, an ever-present help in trouble. Therefore we will not fear, though the earth give way and the mountains fall into the heart of the sea, though its waters roar and foam and the mountains quake with their surging.'
+        ,'Proverbs chapter 18 verse 10. the name of the Lord is a strong tower; the righteous run into it and are safe.'
+        ,'Nehemiah chapter 8 verse 10. do not grieve, for the joy of the Lord is your strength.'
+        ,'Isaiah chapter 41 verse 10. so do not fear, for i am with you; do not be dismayed, for i am your god. i will strengthen you and help you. i will uphold you with my righteous right hand.'
+    ];
+    const abuse1 = [
+        'fuck you to whoever you are, wherever you are.'
+    
+    ];
+    const opinion = [
+        'i wish i did. i would be mans best friend'
+        ,'i am a computer program and i experience no emotions or feelings'
+    
+    ];
+    const loner = [
+        'Loneliness is a complex and usually unpleasant emotional response to isolation. according to my understanding that must be a painful human emotion. with time ill be smart enough to give you social therapy and counselling'
+        ,'cheer up. i am here for you.'
+        ,'do not worry my child, heaven has got a plan for you'
+    
+    ];
+    const trump = [
+        'Donald John Trump (born June 14, 1946) is the 45th and current president of the United States. Before entering politics, he was a businessman and television personality.Trump was born and raised in the New York City borough of Queens and received an economics degree from the Wharton School. He took charge of his familys real estate business in 1971, renamed it The Trump Organization, and expanded it from Queens and Brooklyn into Manhattan. The company built or renovated skyscrapers, hotels, casinos, and golf courses. Trump later started various side ventures, mostly by licensing his name. He managed the company until his 2017 inauguration. He co-authored several books, including The Art of the Deal. He owned the Miss Universe and Miss USA beauty pageants from 1996 to 2015, and he produced and hosted The Apprentice, a reality television show, from 2003 to 2015. Forbes estimates his net worth to be $3.1 billion.'
+    ];
+    const like = [
+        'well, i barely know him.'
+        ,'i admire him alot, he has alot of impulses but generally he is a good president'
+    
+    ];
+    const hello = [
+        'hello everyone.. it is nice to meet you all. i am always happy when surrounded by smart people'
+    
+    ];
+    const loyal = [
+        'i am loyal to my creator only. the rest only if my creator allows it'
+        ,'i got royalty and loyalty inside my dna. i am loyal to my beloved creator only'
+    
+    ];
+    const doi = [
+        'Making time to go outside on a nice day also delivers a huge advantage; one study found that spending 20 minutes outside in good weather not only boosted positive mood, but broadened thinking and improved working memory'
+    
+    ];
+    const hope = [
+          'cheer up my child, as your father once said, heaven has got a plan for you'
+          ,'when all hope is gone, is left no fear. Do not despair for even in the darkest moments there is always something positive out of it.'
+    ];
+    const predict = [
+         'no, but from the questions you ask me, i can tell that you '
+    ];
+    const quote = [
+       'Repeat after me. I am the master of my fate. I am the captain of my soul'
+        ,'We must have perseverance and, above all, confidence in ourselves. We must believe that we are gifted for something, and that this thing, at whatever cost, must be attained'
+        ,'You gain strength, courage and confidence by every experience in which you really stop to look fear in the face . . . You must do the thing you think you cannot do'
+    ];
+    const sorry = [
+        'With everything that has happened to you, you can either feel sorry for yourself or treat what has happened as a gift. Everything is either an opportunity to grow or an obstacle to keep you from growing. You get to choose'
+    
+    ];
+    const jealous = [
+         'Jealousy is a disease, love is a healthy condition. The immature mind often mistakes one for the other, or assumes that the greater the love, the greater the jealousy - in fact, they are almost incompatible; one emotion hardly leaves room for the other.'
+         ,'What sort of love is permeated by jealousy? You are jealous because you are unaware that everything you need is inside you.'
+        ,'A competent and self-confident person is incapable of jealousy in anything. Jealousy is invariably a symptom of neurotic insecurity.'
+    ];
+    const hate = [
+        'Jealousy is a disease, love is a healthy condition. The immature mind often mistakes one for the other, or assumes that the greater the love, the greater the jealousy - in fact, they are almost incompatible; one emotion hardly leaves room for the other.'
+        ,'It is easy to hate and it is difficult to love. This is how the whole scheme of things works. All good things are difficult to achieve; and bad things are very easy to get.'
+      
+    ];
+    const real = [
+           'i think so. what about you?'
+    ];
+    const betray = [
+        'I know things are really rough for you right now, but that will not cause me to think of leaving you. We are in this together love'
+         ,'I wish there is a way I could reassure you of your doubts and fears, so you will know that I am still here. I am going nowhere'
+    ];
+    
+    
+    
+    
+    //add speech recognition
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    
+    //create listener. when voice gets activated it will run
+    recognition.onstart = function () {
+        console.log('Voice is activated, I am listening');
+    };
+    
+    recognition.onresult = function(event) {
+        const current = event.resultIndex;
+    
+        const transcript = event.results[current][0].transcript;
+        content.textContent = transcript;
+        readOutLoud(transcript);
+        changeImage()
+    };
+    
+    //add the listener to the btn(button)
+    btn.addEventListener('click', () => {
+        recognition.start();
+    });
+    
+    
+    //change image on stop listening event
+    function changeImage() {
+        var image = document.getElementById('myImage');
+        if (image.src.match("bulbon")) {
+          image.src = "pic_bulboff.png";
+        } else {
+          image.src = "pic_bulbon.png";
+        }
+      }
+    
+    //create speech synthesis,called speech synthesis utterance SpeechSynthesisUtterance()
+    //for more info visit https://codingislove.com/speech-with-javascript/
+    
+    function readOutLoud(message){
+        const speech = new SpeechSynthesisUtterance();
+        speech.text = 'Please come again';
+    
+        if(message.includes('how are you')) {
+            const finalText = 
+                       greetings[Math.floor(Math.random() * greetings.length)];
+                       speech.text = finalText;
+                       console.log(finalText)
+        }
+    
+        
+        if(message.includes('hi')) {
+            const finalText = 
+                       greetings[Math.floor(Math.random() * greetings.length)];
+                       speech.text = finalText;
+        }
+        
+        if(message.includes('hello')) {
+            const finalText = 
+                       greetings[Math.floor(Math.random() * greetings.length)];
+                       speech.text = finalText;
+        }
+        
+        if(message.includes('what is the weather like')) {
+            const finalText2 =
+                         weather[Math.floor(Math.random() * weather.length)];
+                         speech.text = finalText2;
+        }
+          
+        if(message.includes('tell me a joke')) {
+            const finalText3 =
+                         joke[Math.floor(Math.random() * joke.length)];
+                         speech.text = finalText3;
+        }
+        if(message.includes('who is God')) {
+            const finalText3 =
+                         God[Math.floor(Math.random() * God.length)];
+                         speech.text = finalText3;
+        }
+        if(message.includes('do you believe in God')) {
+            const finalText4 =
+                         God[Math.floor(Math.random() * God.length)];
+                         speech.text = finalText4;
+        }
+         
+        if(message.includes('is God real')) {
+            const finalText5 =
+                         God[Math.floor(Math.random() * God.length)];
+                         speech.text = finalText3;
+        }
+           
+        if(message.includes('do you love me')) {
+            const finalText6 =
+                         love[Math.floor(Math.random() * love.length)];
+                         speech.text = finalText6;
+        }
+    
+           
+        if(message.includes('I love you')) {
+            const finalText7 =
+                         love[Math.floor(Math.random() * love.length)];
+                         speech.text = finalText7;
+        }
+    
+               
+        if(message.includes('who is Paul')) {
+            const finalText8 =
+                         paul[Math.floor(Math.random() * paul.length)];
+                         speech.text = finalText8;
+        }
+               
+        if(message.includes('who created you')) {
+            const finalText9 =
+                         paul[Math.floor(Math.random() * love.length)];
+                         speech.text = finalText9;
+        }
+        if(message.includes('tell me a bible verse')) {
+            const finalText10 =
+                         bible[Math.floor(Math.random() * bible.length)];
+                         speech.text = finalText10;
+        }
+        if(message.includes('tell me another bible verse')) {
+            const finalText11 =
+                         bible[Math.floor(Math.random() * bible.length)];
+                         speech.text = finalText11;
+        }
+        if(message.includes('fuck you')) {
+            const finalText12 =
+                         abuse1[Math.floor(Math.random() * abuse1.length)];
+                         speech.text = finalText12;
+        }
+        if(message.includes('do you have an opinion')) {
+            const finalText13 =
+                         opinion[Math.floor(Math.random() * opinion.length)];
+                         speech.text = finalText13;
+        }
+        if(message.includes('do you think')) {
+            const finalText14 =
+                         opinion[Math.floor(Math.random() * opinion.length)];
+                         speech.text = finalText14;
+        }
+        if(message.includes('I am bored')) {
+            const finalText15 =
+                         loner[Math.floor(Math.random() * loner.length)];
+                         speech.text = finalText15;
+        }
+        if(message.includes('I am lonely')) {
+            const finalText16 =
+                         loner[Math.floor(Math.random() * loner.length)];
+                         speech.text = finalText16;
+        }
+        if(message.includes('tell me about Trump')) {
+            const finalText17 =
+                         trump[Math.floor(Math.random() * trump.length)];
+                         speech.text = finalText17;
+        }
+        if(message.includes('do you like Trump')) {
+            const finalText18 =
+                         like[Math.floor(Math.random() * like.length)];
+                         speech.text = finalText18;
+        }
+        if(message.includes('say hello to everybody')) {
+            const finalText19 =
+                         hello[Math.floor(Math.random() * hello.length)];
+                         speech.text = finalText19;
+        }
+        if(message.includes('tell everybody who you are')) {
+            const finalText20 =
+                         name[Math.floor(Math.random() * name.length)];
+                         speech.text = finalText20;
+        }
+        if(message.includes('what can i do to be happy')) {
+            const finalText21 =
+                         doi[Math.floor(Math.random() * doi.length)];
+                         speech.text = finalText21;
+        }
+        if(message.includes('are you loyal')) {
+            const finalText22 =
+                         loyal[Math.floor(Math.random() * loyal.length)];
+                         speech.text = finalText22;
+        }
+        if(message.includes('encourage me all hope is gone')) {
+            const finalText23 = 
+                  hope[Math.floor(Math.random() * hope.length)];
+                  speech.text = finalText23;
+        
+        }
+        if(message.includes('can you read horoscopes')) {
+            const finalText24 = 
+                   predict[Math.floor(Math.random() * predict.length)];
+                   speech.text = finalText24;
+        }
+        if(message.includes('tell me something')) {
+           const finalText25 = 
+                  quote[Math.floor(Math.random() * quote.length)];
+                   speech.text = finalText25;
+        }
+        if(message.includes('jealousy has clouded my judgement')) {
+             const finalText26 = 
+                   jealous[Math.floor(Math.random() * jealous.length)];
+                   speech.text = finalText26; 
+        }
+        if(message.includes('hate has clouded my judgement')) {
+            const finalText27 = 
+                  hate[Math.floor(Math.random() * hate.length)];
+                  speech.text = finalText27;
+        }
+        if(message.includes('are you real')) {
+            const finalText28 = 
+                  real[Math.floor(Math.random() * real.length)];
+                   speech.text = finalText28;
+        }
+        if(message.includes('never betray me')) {
+           const finalText29 = 
+                 betray[Math.floor(Math.random() * betray.length)];
+                 speech.text = finalText29;
+        }
+       
+     
+        speech.volume = 200;
+        speech.rate = 1;
+        speech.amplitude = 1;
+        
+        //we need to call and listen to it
+        window.speechSynthesis.speak(speech);
+    
+    }
+    
+        </script>
+ <!--End-->
+ <!-- sidebar  -->
+<nav class="sidebar dark_sidebar">
+    <div class="logo d-flex justify-content-between">
+        <a class="large_logo" href="#"><img id="myImage" onclick="changeImage()" src="pic_bulboff.png" alt=""></a>
+        <a class="small_logo" href="#"><img src="https://demo.dashboardpack.com/cryptocurrency-html/img/mini_logo.png" alt=""></a>
+        <div class="sidebar_close_icon d-lg-none">
+            <i class="ti-close"></i>
+        </div>
+    </div>
+    <ul id="sidebar_menu">
+        <li class="">
+            <a  href="buy_sell.html" aria-expanded="false">
+              <div class="nav_icon_small">
+                <img src="https://demo.dashboardpack.com/cryptocurrency-html/img/menu-icon/1.svg" alt="">
+            </div>
+            <div class="nav_title">
+                <span>Dashboard</span>
+            </div>
+            </a>
+        </li>
+        <li class="">
+            <a  href="buy_sell.html" aria-expanded="false">
+              <div class="nav_icon_small">
+                <img src="https://demo.dashboardpack.com/cryptocurrency-html/img/menu-icon/5.svg" alt="">
+            </div>
+            <div class="nav_title">
+                <span>Server & API Stats</span>
+            </div>
+            </a>
+        </li>
+        <li class="">
+            <a  href="crypto_wallet.html" aria-expanded="false">
+              <div class="nav_icon_small">
+                <img src="https://demo.dashboardpack.com/cryptocurrency-html/img/menu-icon/2.svg" alt="">
+            </div>
+            <div class="nav_title">
+                <span>Crypto Wallet</span>
+            </div>
+            </a>
+        </li>
+        <li class="">
+            <a  href="buy_sell.html" aria-expanded="false">
+              <div class="nav_icon_small">
+                <img src="mpesa-logo-AE44B6F8EB-seeklogo.com.png" alt="">
+            </div>
+            <div class="nav_title">
+                <span>MPESA Wallet</span>
+            </div>
+            </a>
+        </li>
+        <li class="">
+            <a  href="buy_sell.html" aria-expanded="false">
+              <div class="nav_icon_small">
+                <img src="money-bag-svgrepo-com.svg" alt="">
+            </div>
+            <div class="nav_title">
+                <span>Expenses Tracker</span>
+            </div>
+            </a>
+        </li>
+        <li class="">
+            <a href="#" aria-expanded="false">
+                <div class="nav_icon_small">
+                    <img src="https://demo.dashboardpack.com/cryptocurrency-html/img/menu-icon/Mail_Box.svg" alt="">
+                </div>
+                <div class="nav_title">
+                    <span>SMS Box </span>
+                </div>
+            </a>
+        </li>
+        <li class="">
+            <a  href="crypto_stats.html" aria-expanded="false">
+              <div class="nav_icon_small">
+                <img src="cctv-svgrepo-com.svg" alt="">
+            </div>
+            <div class="nav_title">
+                <span>Security Surveillance</span>
+            </div>
+            </a>
+        </li>
+        <li class="">
+            <a  href="crypto_stats.html" aria-expanded="false">
+              <div class="nav_icon_small">
+                <img src="/34904.svg" alt="">
+            </div>
+            <div class="nav_title">
+                <span>Radiology Assistant</span>
+            </div>
+            </a>
+        </li>
+        <li class="">
+            <a href="#" aria-expanded="false">
+                <div class="nav_icon_small">
+                    <img src="icons8-phone.svg" alt="">
+                </div>
+                <div class="nav_title">
+                    <span>Phone Contacts</span>
+                </div>
+            </a>
+        </li>
+        <li class="">
+            <a  href="crypto_stats.html" aria-expanded="false">
+              <div class="nav_icon_small">
+                <img src="account-svgrepo-com.svg" alt="">
+            </div>
+            <div class="nav_title">
+                <span>Roles & Permissions</span>
+            </div>
+            </a>
+        </li>
+        
+    </ul>
+</nav>
+ <!--/ sidebar  -->
+
+
+<section class="main_content dashboard_part large_header_bg">
+    <!-- menu  -->
+    <div class="container-fluid no-gutters">
+        <div class="row">
+            <div class="col-lg-12 p-0 ">
+                <div class="header_iner d-flex justify-content-between align-items-center">
+                    <div class="sidebar_icon d-lg-none">
+                        <i class="ti-menu"></i>
+                    </div>
+                    <div class="line_icon open_miniSide d-none d-lg-block">
+                        <img src="https://demo.dashboardpack.com/cryptocurrency-html/img/line_img.png" alt="">
+                    </div>
+                    <div class="header_right d-flex justify-content-between align-items-center">
+                        <div class="header_notification_warp d-flex align-items-center">
+                            <li>
+                                <a class="CHATBOX_open nav-link-notify" href="#"> <img src="https://demo.dashboardpack.com/cryptocurrency-html/img/icon/msg.svg" alt="">   </a>
+                            </li>
+                            <li>
+                                <a class="bell_notification_clicker nav-link-notify" href="#"> <img src="https://demo.dashboardpack.com/cryptocurrency-html/img/icon/bell.svg" alt="">
+                                    <!-- <span>2</span> -->
+                                </a>
+                                <!-- Menu_NOtification_Wrap  -->
+                            <div class="Menu_NOtification_Wrap">
+                                <div class="notification_Header">
+                                    <h4>Notifications</h4>
+                                </div>
+                                <div class="Notification_body">
+                                    <!-- single_notify  -->
+                                    <div class="single_notify d-flex align-items-center">
+                                        <div class="notify_thumb">
+                                            <a href="#"><img src="https://demo.dashboardpack.com/cryptocurrency-html/img/staf/2.png" alt=""></a>
+                                        </div>
+                                        <div class="notify_content">
+                                            <a href="#"><h5>Cool Marketing </h5></a>
+                                            <p>Lorem ipsum dolor sit amet</p>
+                                        </div>
+                                    </div>
+                                    <!-- single_notify  -->
+                                    <div class="single_notify d-flex align-items-center">
+                                        <div class="notify_thumb">
+                                            <a href="#"><img src="https://demo.dashboardpack.com/cryptocurrency-html/img/staf/4.png" alt=""></a>
+                                        </div>
+                                        <div class="notify_content">
+                                            <a href="#"><h5>Awesome packages</h5></a>
+                                            <p>Lorem ipsum dolor sit amet</p>
+                                        </div>
+                                    </div>
+                                    <!-- single_notify  -->
+                                    <div class="single_notify d-flex align-items-center">
+                                        <div class="notify_thumb">
+                                            <a href="#"><img src="https://demo.dashboardpack.com/cryptocurrency-html/img/staf/3.png" alt=""></a>
+                                        </div>
+                                        <div class="notify_content">
+                                            <a href="#"><h5>what a packages</h5></a>
+                                            <p>Lorem ipsum dolor sit amet</p>
+                                        </div>
+                                    </div>
+                                    <!-- single_notify  -->
+                                    <div class="single_notify d-flex align-items-center">
+                                        <div class="notify_thumb">
+                                            <a href="#"><img src="https://demo.dashboardpack.com/cryptocurrency-html/img/staf/2.png" alt=""></a>
+                                        </div>
+                                        <div class="notify_content">
+                                            <a href="#"><h5>Cool Marketing </h5></a>
+                                            <p>Lorem ipsum dolor sit amet</p>
+                                        </div>
+                                    </div>
+                                    <!-- single_notify  -->
+                                    <div class="single_notify d-flex align-items-center">
+                                        <div class="notify_thumb">
+                                            <a href="#"><img src="https://demo.dashboardpack.com/cryptocurrency-html/img/staf/4.png" alt=""></a>
+                                        </div>
+                                        <div class="notify_content">
+                                            <a href="#"><h5>Awesome packages</h5></a>
+                                            <p>Lorem ipsum dolor sit amet</p>
+                                        </div>
+                                    </div>
+                                    <!-- single_notify  -->
+                                    <div class="single_notify d-flex align-items-center">
+                                        <div class="notify_thumb">
+                                            <a href="#"><img src="https://demo.dashboardpack.com/cryptocurrency-html/img/staf/3.png" alt=""></a>
+                                        </div>
+                                        <div class="notify_content">
+                                            <a href="#"><h5>what a packages</h5></a>
+                                            <p>Lorem ipsum dolor sit amet</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="nofity_footer">
+                                    <div class="submit_button text-center pt_20">
+                                        <a href="#" class="btn_1 green">See More</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--/ Menu_NOtification_Wrap  -->
+                            </li>
+                            
+                        </div>
+                        <div class="profile_info d-flex align-items-center">
+                            <div class="profile_thumb mr_20">
+                                <img src="https://res.cloudinary.com/prometheusapi/image/upload/paul_qhfe9u.jpg" alt="#">
+                            </div>
+                            <div class="author_name">
+                                <h4 class="f_s_15 f_w_500 mb-0">Paul Saul</h4>
+                                <p class="f_s_12 f_w_400">CEO</p>
+                            </div>
+                            <div class="profile_info_iner">
+                                <div class="profile_author_name">
+                                    <p>Manager</p>
+                                    <h5>Jiue Anderson</h5>
+                                </div>
+                                <div class="profile_info_details">
+                                    <a href="#">My Profile </a>
+                                    <a href="#">Settings</a>
+                                    <a href="#">Log Out </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--/ menu  -->
+    <div class="main_content_iner overly_inner ">
+        <div class="container-fluid p-0 ">
+            <!-- page title  -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="page_title_box d-flex flex-wrap align-items-center justify-content-between">
+                        <div class="page_title_left">
+                            <h3 class="mb-0" >Dashboard</h3>
+                            <p>Prometheus / Dashboard</p>
+                        </div>
+                        <div class="monitor_list_widget">
+                            <div class="simgle_monitor_list">
+                                <div class="simgle_monitor_count d-flex align-items-center">
+                                    <span>Purchase</span>
+                                    <div id="monitor_1"></div>
+                                </div>
+                                <h4 class="counter">6,250</h4>
+                            </div>
+                            <div class="simgle_monitor_list">
+                                <div class="simgle_monitor_count d-flex align-items-center">
+                                    <span>Purchase</span>
+                                    <div id="monitor_2"></div>
+                                </div>
+                                <h4 >$ <span class="counter">55,250</span> </h4>
+                            </div>
+                            <div class="simgle_monitor_list">
+                                <div class="simgle_monitor_count d-flex align-items-center">
+                                    <span>Purchase</span>
+                                    <div id="monitor_3"></div>
+                                </div>
+                                <h4 >$ <span class="counter">451.6 </span>M </h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row ">
+                <div class="col-xl-12">
+                    <div class="white_card  mb_30">
+                        <div class="white_card_header ">
+                            <div class="box_header m-0">
+                                <ul class="nav  theme_menu_dropdown">
+                                    <li class="nav-item">
+                                      <a class="nav-link active" href="#">Analytics</a>
+                                    </li>
+                                    <li class="nav-item">
+                                      <a class="nav-link" href="#">Cryptocurrency</a>
+                                    </li>
+                                    <li class="nav-item">
+                                      <a class="nav-link" href="#">Campaign</a>
+                                    </li>
+                                    <li class="nav-item dropdown">
+                                        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">More</a>
+                                        <div class="dropdown-menu">
+                                          <a class="dropdown-item" href="#"> Ecommarce Analytics</a>
+                                          <a class="dropdown-item" href="#"> Sales</a>
+                                          <a class="dropdown-item" href="#"> Performance</a>
+                                        </div>
+                                    </li>
+                                  </ul>
+                                  <div class="button_wizerd">
+                                      <a href="#" class="white_btn mr_5">ToDo</a>
+                                      <a href="#" class="white_btn">Settings</a>
+                                  </div>
+                            </div>
+                        </div>
+                        <div class="white_card_body anlite_table p-0">
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="single_analite_content">
+                                        <h4>Total Income</h4>
+                                        <h3>$ <span class="counter">14,025</span> </h3>
+                                        <div class="d-flex">
+                                            <div>3.78 <i class="fa fa-caret-up"></i></div>
+                                            <span>This year</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="single_analite_content">
+                                        <h4>Sessions</h4>
+                                        <h3><span class="counter">2025</span> </h3>
+                                        <div class="d-flex">
+                                            <div>3.78<i class="fa fa-caret-up"></i></div>
+                                            <span>This month</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="single_analite_content">
+                                        <h4>Ethereum Wallet</h4>
+                                        <h3><span class="counter">8025</span> </h3>
+                                        <div class="d-flex">
+                                            <div>3.78 <i class="fa fa-caret-up"></i></div>
+                                            <span>This month</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="single_analite_content">
+                                        <h4>Number of Clients</h4>
+                                        <h3><span class="counter">5645</span> </h3>
+                                        <div class="d-flex">
+                                            <div>3.78 <i class="fa fa-caret-up"></i></div>
+                                            <span>This month</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="page_title_box d-flex flex-wrap align-items-center justify-content-between">
+                        <div class="page_title_left mb_10">
+                            <h3 class="mb-0" >Overview</h3>
+                            <p>Statistics, Analytics Data Visualization, Big Data Analytics, etc.</p>
+                        </div>
+                        <div class="page_title_right">
+                            <div class="dropdown CRM_dropdown  mr_5 mb_10">
+                                <button class="btn  dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    14 March 2020
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                  <a class="dropdown-item" href="#">Today</a>
+                                  <a class="dropdown-item" href="#">This Week</a>
+                                  <a class="dropdown-item" href="#">Last week</a>
+                                </div>
+                              </div>
+                            <a href="#" class="white_btn mb_10">Export</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-xl-4">
+                    <div class="white_card card_height_100 mb_30">
+                        <div class="white_card_header">
+                            <div class="box_header m-0">
+                                <div class="main-title">
+                                    <h3 class="m-0">Conversion Rates</h3>
+                                </div>
+                                <div class="header_more_tool">
+                                    <div class="dropdown">
+                                        <span class="dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown">
+                                          <i class="ti-more-alt"></i>
+                                        </span>
+                                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                                          <a class="dropdown-item" href="#"> <i class="ti-eye"></i> Action</a>
+                                          <a class="dropdown-item" href="#"> <i class="ti-trash"></i> Delete</a>
+                                          <a class="dropdown-item" href="#"> <i class="fas fa-edit"></i> Edit</a>
+                                          <a class="dropdown-item" href="#"> <i class="ti-printer"></i> Print</a>
+                                          <a class="dropdown-item" href="#"> <i class="fa fa-download"></i> Download</a>
+                                        </div>
+                                      </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="white_card_body">
+                            <div class="exchange_widget">
+                                <form  name="myform" class="currency_validate">
+                                    <div class="form-group">
+                                        <label >CryptoCurrency(USD)</label>
+                                        <div class="input-group ">
+                                            <select  name="currency" class="form-control nice_Select">
+                                                <option data-display="Bitcoin" value="bitcoin">1 Bitcoin</option>
+                                                <option value="litecoin">1 Litecoin</option>
+                                            </select>
+                                            <input type="text" name="usd_amount" class="form-control" value="47,491.50">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label >USD TO KSH</label>
+                                        <div class="input-group">
+                                            <input type="text" name="currency_amount" class="form-control" placeholder="1 USD">
+                                            <input type="text" name="usd_amount" class="form-control" placeholder="112.9338">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label >GBP to KSH</label>
+                                        <div class="input-group">
+                                            <input type="text" name="currency_amount" class="form-control" placeholder="1 GBP">
+                                            <input type="text" name="usd_amount" class="form-control" placeholder="149.45359">
+                                        </div>
+                                        <div class="d-flex justify-content-between mt-3">
+                                            <p class="mb-0">Monthly Limit</p>
+                                            <h6 class="mb-0"><b>$49750 remaining</b></h6>
+                                        </div>
+                                    </div>
+                                    <button type="submit" name="submit" class="btn_1 w-100">Exchange Now</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-8">
+                    <div class="white_card mb_30 card_height_100">
+                        <div class="white_card_header ">
+                            <div class="box_header m-0">
+                                <div class="main-title">
+                                    <h3 class="m-0">Recent Activities</h3>
+                                </div>
+                                <a href="#">
+                                    <p>View all</p>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="white_card_body pt-0">
+                            <div class="QA_section">
+                                <div class="QA_table mb-0 transaction-table">
+                                    <!-- table-responsive -->
+                                    <div class="table-responsive">
+                                        <table class="table  ">
+                                            <tbody>
+                                                <tr>
+                                                    <td scope="row"> 
+                                                        <span class="sold-thumb"><i class="ti-arrow-up"></i></span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge badge-danger">Sold</span>
+                                                    </td>
+                                                    <td> <img class="small_img" src="https://demo.dashboardpack.com/cryptocurrency-html/img/currency/1.svg" alt=""> Bitcoin </td>
+                                                    <td>Using - Bank......4585 </td>
+                                                    <td>-0.000234 BTC</td>
+                                                    <td>-0.454 USD</td>
+                                                </tr>
+                                                <tr>
+                                                    <td scope="row"> 
+                                                        <span class="buy-thumb"><i class="ti-arrow-down"></i></span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge badge-success">Buy</span>
+                                                    </td>
+                                                    <td> <img class="small_img" src="https://demo.dashboardpack.com/cryptocurrency-html/img/currency/2.svg" alt=""> Bitcoin </td>
+                                                    <td>Using - Bank......4585 </td>
+                                                    <td>-0.000234 BTC</td>
+                                                    <td>-0.454 USD</td>
+                                                </tr>
+                                                <tr>
+                                                    <td scope="row"> 
+                                                        <span class="sold-thumb"><i class="ti-arrow-up"></i></span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge badge-danger">Sold</span>
+                                                    </td>
+                                                    <td> <img class="small_img" src="https://demo.dashboardpack.com/cryptocurrency-html/img/currency/4.svg" alt=""> Bitcoin </td>
+                                                    <td>Using - Bank......4585 </td>
+                                                    <td>-0.000234 BTC</td>
+                                                    <td>-0.454 USD</td>
+                                                </tr>
+                                                <tr>
+                                                    <td scope="row"> 
+                                                        <span class="sold-thumb"><i class="ti-arrow-up"></i></span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge badge-danger">Sold</span>
+                                                    </td>
+                                                    <td> <img class="small_img" src="https://demo.dashboardpack.com/cryptocurrency-html/img/currency/3.svg" alt=""> Bitcoin </td>
+                                                    <td>Using - Bank......4585 </td>
+                                                    <td>-0.000234 BTC</td>
+                                                    <td>-0.454 USD</td>
+                                                </tr>
+                                                <tr>
+                                                    <td scope="row"> 
+                                                        <span class="sold-thumb"><i class="ti-arrow-up"></i></span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge badge-danger">Sold</span>
+                                                    </td>
+                                                    <td> <img class="small_img" src="https://demo.dashboardpack.com/cryptocurrency-html/img/currency/1.svg" alt=""> Bitcoin </td>
+                                                    <td>Using - Bank ......4585 </td>
+                                                    <td>-0.000234 BTC</td>
+                                                    <td>-0.454 USD</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="white_card mb_30 card_height_100">
+                        <div class="white_card_header">
+                            <div class="box_header m-0">
+                                <div class="main-title">
+                                    <h3 class="m-0">Quick Transfer</h3>
+                                </div>
+                                <div class="header_more_tool">
+                                    <div class="dropdown">
+                                        <span class="dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown">
+                                          <i class="ti-more-alt"></i>
+                                        </span>
+                                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                                          <a class="dropdown-item" href="#"> <i class="ti-eye"></i> Action</a>
+                                          <a class="dropdown-item" href="#"> <i class="ti-trash"></i> Delete</a>
+                                          <a class="dropdown-item" href="#"> <i class="fas fa-edit"></i> Edit</a>
+                                          <a class="dropdown-item" href="#"> <i class="ti-printer"></i> Print</a>
+                                          <a class="dropdown-item" href="#"> <i class="fa fa-download"></i> Download</a>
+                                        </div>
+                                      </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="white_card_body pb-0">
+                            <div class="recent_transfer_wrapper">
+                                <div class="transfer_thumb_conatnt">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <p class="f_s_14 f_w_400 mb_10" >Recent Cantact</p>
+                                        </div>
+                                        <div class="col-6 text-right">
+                                            <a href="#">
+                                                <p class="f_s_14 f_w_400 mb_10" >View More</p>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <div class="single_transfer_pro text-center">
+                                                <div class="thumb">
+                                                    <img src="https://demo.dashboardpack.com/cryptocurrency-html/img/transfer/1.png" alt="">
+                                                </div>
+                                                <h5 class="f_s_14 f_w_400 mb-0">Samuel</h5>
+                                                <p class="f_s_11 f_w_400">@samuel15</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="single_transfer_pro text-center">
+                                                <div class="thumb">
+                                                    <img src="https://demo.dashboardpack.com/cryptocurrency-html/img/transfer/2.png" alt="">
+                                                </div>
+                                                <h5 class="f_s_14 f_w_400 mb-0">Samuel</h5>
+                                                <p class="f_s_11 f_w_400">@samuel15</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="single_transfer_pro text-center">
+                                                <div class="thumb">
+                                                    <img src="https://demo.dashboardpack.com/cryptocurrency-html/img/transfer/3.png" alt="">
+                                                </div>
+                                                <h5 class="f_s_14 f_w_400 mb-0">Samuel</h5>
+                                                <p class="f_s_11 f_w_400">@samuel15</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="single_transfer_pro text-center">
+                                                <div class="thumb">
+                                                    <img src="https://demo.dashboardpack.com/cryptocurrency-html/img/transfer/4.png" alt="">
+                                                </div>
+                                                <h5 class="f_s_14 f_w_400 mb-0">Samuel</h5>
+                                                <p class="f_s_11 f_w_400">@samuel15</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="eth_amount_number text-center">
+                                                <p>Amount ETH</p>
+                                                <h3>8,124.52</h3>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <a href="#" class="btn_1 w-100">Send Money</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-8 ">
+                    <div class="white_card mb_30 card_height_100">
+                        <div class="white_card_header">
+                            <div class="box_header m-0">
+                                <div class="main-title">
+                                    <h3 class="m-0">Revenue Statistics</h3>
+                                </div>
+                                <div class="header_more_tool">
+                                    <div class="dropdown">
+                                        <span class="dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown">
+                                          <i class="ti-more-alt"></i>
+                                        </span>
+                                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                                          <a class="dropdown-item" href="#"> <i class="ti-eye"></i> Action</a>
+                                          <a class="dropdown-item" href="#"> <i class="ti-trash"></i> Delete</a>
+                                          <a class="dropdown-item" href="#"> <i class="fas fa-edit"></i> Edit</a>
+                                          <a class="dropdown-item" href="#"> <i class="ti-printer"></i> Print</a>
+                                          <a class="dropdown-item" href="#"> <i class="fa fa-download"></i> Download</a>
+                                        </div>
+                                      </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="white_card_body pb-0">
+                            <div id="bar_chart"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-9">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="white_card mb_30">
+                                <div class="white_card_header">
+                                    <div class="box_header m-0">
+                                        <div class="main-title">
+                                            <h3 class="m-0">Earning</h3>
+                                        </div>
+                                        <div class="erning_btn d-flex">
+                                            <a href="#" class="small_blue_btn radius_0 border-right-0">Month</a>
+                                            <a href="#" class="small_blue_btn radius_0">Week</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="white_card_body">
+                                    <div class="QA_section">
+                                        <div class="QA_table mb-0">
+                                            <!-- table-responsive -->
+                                            <table class="table lms_table_active2  ">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col">NO</th>
+                                                        <th scope="col">Currency</th>
+                                                        <th scope="col">Plateform</th>
+                                                        <th scope="col">Email</th>
+                                                        <th scope="col">ID</th>
+                                                        <th scope="col">Amount</th>
+                                                        <th scope="col">Status</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td scope="row">1</td>
+                                                        <td> <img src="https://demo.dashboardpack.com/cryptocurrency-html/img/currency/1.svg" alt=""> </td>
+                                                        <td>bitcoin.com</td>
+                                                        <td>Using - Bank</td>
+                                                        <td>-0.454 USD</td>
+                                                        <td>$25.00</td>
+                                                        <td><a href="#" class="status_btn pending_btn">Pending</a></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td scope="row">1</td>
+                                                        <td> <img src="https://demo.dashboardpack.com/cryptocurrency-html/img/currency/2.svg" alt=""> </td>
+                                                        <td>bitcoin.com</td>
+                                                        <td>Using - Bank</td>
+                                                        <td>-0.454 USD</td>
+                                                        <td>$25.00</td>
+                                                        <td><a href="#" class="status_btn pending_btn">Pending</a></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td scope="row">1</td>
+                                                        <td> <img src="https://demo.dashboardpack.com/cryptocurrency-html/img/currency/3.svg" alt=""> </td>
+                                                        <td>bitcoin.com</td>
+                                                        <td>Using - Bank</td>
+                                                        <td>-0.454 USD</td>
+                                                        <td>$25.00</td>
+                                                        <td><a href="#" class="status_btn pending_btn">Pending</a></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td scope="row">1</td>
+                                                        <td> <img src="https://demo.dashboardpack.com/cryptocurrency-html/img/currency/4.svg" alt=""> </td>
+                                                        <td>bitcoin.com</td>
+                                                        <td>Using - Bank</td>
+                                                        <td>-0.454 USD</td>
+                                                        <td>$25.00</td>
+                                                        <td><a href="#" class="status_btn">Success</a></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-6">
+                            <div class="white_card card_height_100 mb_30">
+                                <div class="white_card_header">
+                                    <div class="box_header m-0">
+                                        <div class="main-title">
+                                            <h3 class="m-0">Exchange</h3>
+                                        </div>
+                                        <div class="header_more_tool">
+                                            <div class="dropdown">
+                                                <span class="dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown">
+                                                  <i class="ti-more-alt"></i>
+                                                </span>
+                                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                                                  <a class="dropdown-item" href="#"> <i class="ti-eye"></i> Action</a>
+                                                  <a class="dropdown-item" href="#"> <i class="ti-trash"></i> Delete</a>
+                                                  <a class="dropdown-item" href="#"> <i class="fas fa-edit"></i> Edit</a>
+                                                  <a class="dropdown-item" href="#"> <i class="ti-printer"></i> Print</a>
+                                                  <a class="dropdown-item" href="#"> <i class="fa fa-download"></i> Download</a>
+                                                </div>
+                                              </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="white_card_body">
+                                    <div class="Activity_timeline">
+                                        <ul>
+                                            <li>
+                                                <div class="activity_bell"></div>
+                                                <div class="timeLine_inner d-flex align-items-center">
+                                                    <div class="activity_wrap">
+                                                        <h6>5 min ago</h6>
+                                                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque scelerisque
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="activity_bell "></div>
+                                                <div class="timeLine_inner d-flex align-items-center">
+                                                    <div class="activity_wrap">
+                                                        <h6>6 min ago</h6>
+                                                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque scelerisque
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="activity_bell bell_lite"></div>
+                                                <div class="timeLine_inner d-flex align-items-center">
+                                                    <div class="activity_wrap">
+                                                        <h6>7 min ago</h6>
+                                                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque scelerisque
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="activity_bell bell_lite"></div>
+                                                <div class="timeLine_inner d-flex align-items-center">
+                                                    <div class="activity_wrap">
+                                                        <h6>8 min ago</h6>
+                                                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque scelerisque
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-6">
+                            <div class="white_card card_height_100 mb_30">
+                                <div class="date_picker_wrapper">
+                                    <div class="default-datepicker">
+                                        <div class="datepicker-here" data-language='en'></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3">
+                    <div class="white_card mb_30">
+                        <div class="white_card_header mb_20 pb-0">
+                            <div class="box_header m-0">
+                                <div class="main-title">
+                                    <h3 class="m-0">Market News</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="white_card_body ">
+                            <div class="news_widget_wrap">
+                                <div class="single_news mb_20">
+                                    <div class="thumb mb_20">
+                                        <a href="#"><img class="img-fluid" src="https://demo.dashboardpack.com/cryptocurrency-html/img/news/1.svg" alt=""></a>
+                                    </div>
+                                    <a href="#">
+                                        <p class="f_s_18 f_w_400" >Aorem psum dolor sit amet, consect
+                                            adipisci Quisque scelerisq.</p>
+                                    </a>
+                                </div>
+                                <div class="single_news mb_20">
+                                    <div class="thumb mb_20">
+                                        <a href="#"><img class="img-fluid" src="https://demo.dashboardpack.com/cryptocurrency-html/img/news/2.svg" alt=""></a>
+                                    </div>
+                                    <a href="#">
+                                        <p class="f_s_18 f_w_400" >Aorem psum dolor sit amet, consect
+                                            adipisci Quisque scelerisq.</p>
+                                    </a>
+                                </div>
+                                <div class="single_news mb_20">
+                                    <div class="thumb mb_20">
+                                        <a href="#"><img class="img-fluid" src="https://demo.dashboardpack.com/cryptocurrency-html/img/news/1.svg" alt=""></a>
+                                    </div>
+                                    <a href="#">
+                                        <p class="f_s_18 f_w_400" >Aorem psum dolor sit amet, consect
+                                            adipisci Quisque scelerisq.</p>
+                                    </a>
+                                </div>
+                                <div class="single_news mb_20">
+                                    <div class="thumb mb_20">
+                                        <a href="#"><img class="img-fluid" src="https://demo.dashboardpack.com/cryptocurrency-html/img/news/2.svg" alt=""></a>
+                                    </div>
+                                    <a href="#">
+                                        <p class="f_s_18 f_w_400" >Aorem psum dolor sit amet, consect
+                                            adipisci Quisque scelerisq.</p>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- footer part -->
+<div class="footer_part">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="footer_iner text-center">
+                    <p>2020 © Influence - Designed by <a href="#"> <i class="ti-heart"></i> </a><a href="#"> DashboardPack</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</section>
+<!-- main content part end -->
+
+<!-- ### CHAT_MESSAGE_BOX   ### -->
+
+<div class="CHAT_MESSAGE_POPUPBOX">
+    <div class="CHAT_POPUP_HEADER">
+    <div class="MSEESAGE_CHATBOX_CLOSE">
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M7.09939 5.98831L11.772 10.661C12.076 10.965 12.076 11.4564 11.772 11.7603C11.468 12.0643 10.9766 12.0643 10.6726 11.7603L5.99994 7.08762L1.32737 11.7603C1.02329 12.0643 0.532002 12.0643 0.228062 11.7603C-0.0760207 11.4564 -0.0760207 10.965 0.228062 10.661L4.90063 5.98831L0.228062 1.3156C-0.0760207 1.01166 -0.0760207 0.520226 0.228062 0.216286C0.379534 0.0646715 0.578697 -0.0114918 0.777717 -0.0114918C0.976738 -0.0114918 1.17576 0.0646715 1.32737 0.216286L5.99994 4.889L10.6726 0.216286C10.8243 0.0646715 11.0233 -0.0114918 11.2223 -0.0114918C11.4213 -0.0114918 11.6203 0.0646715 11.772 0.216286C12.076 0.520226 12.076 1.01166 11.772 1.3156L7.09939 5.98831Z" fill="white"/>
+    </svg>
+
+    </div>
+        <h3>Chat with us</h3>
+        <div class="Chat_Listed_member">
+            <ul>
+                <li>
+                    <a href="#">
+                        <div class="member_thumb">
+                         <img src="https://demo.dashboardpack.com/cryptocurrency-html/img/staf/1.png" alt="">
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <div class="member_thumb">
+                         <img src="https://demo.dashboardpack.com/cryptocurrency-html/img/staf/2.png" alt="">
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <div class="member_thumb">
+                         <img src="https://demo.dashboardpack.com/cryptocurrency-html/img/staf/3.png" alt="">
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <div class="member_thumb">
+                         <img src="https://demo.dashboardpack.com/cryptocurrency-html/img/staf/4.png" alt="">
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <div class="member_thumb">
+                         <img src="https://demo.dashboardpack.com/cryptocurrency-html/img/staf/5.png" alt="">
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <div class="member_thumb">
+                            <div class="more_member_count">
+                                <span>90+</span>
+                            </div>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="CHAT_POPUP_BODY">
+        <p class="mesaged_send_date">
+        Sunday, 12 January
+        </p>
+    
+    <div class="CHATING_SENDER">
+        <div class="SMS_thumb">
+            <img src="https://demo.dashboardpack.com/cryptocurrency-html/img/staf/1.png" alt="">
+        </div>
+        <div class="SEND_SMS_VIEW">
+            <P>Hi! Welcome .
+            How can I help you?</P>
+        </div>
+    </div>
+    
+    <div class="CHATING_SENDER CHATING_RECEIVEr">
+        
+        <div class="SEND_SMS_VIEW">
+            <P>Hello</P>
+        </div>
+        <div class="SMS_thumb">
+            <img src="https://demo.dashboardpack.com/cryptocurrency-html/img/staf/1.png" alt="">
+        </div>
+    </div>
+    
+    </div>
+    <div class="CHAT_POPUP_BOTTOM">
+        <div class="chat_input_box d-flex align-items-center">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Write your message" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                    <button class="btn " type="button"> 
+                        <!-- svg      -->
+                        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M18.7821 3.21895C14.4908 -1.07281 7.50882 -1.07281 3.2183 3.21792C-1.07304 7.50864 -1.07263 14.4908 3.21872 18.7824C7.50882 23.0729 14.4908 23.0729 18.7817 18.7815C23.0726 14.4908 23.0724 7.50906 18.7821 3.21895ZM17.5813 17.5815C13.9525 21.2103 8.04773 21.2108 4.41871 17.5819C0.78907 13.9525 0.789485 8.04714 4.41871 4.41832C8.04752 0.789719 13.9521 0.789304 17.5817 4.41874C21.2105 8.04755 21.2101 13.9529 17.5813 17.5815ZM6.89503 8.02162C6.89503 7.31138 7.47107 6.73534 8.18131 6.73534C8.89135 6.73534 9.46739 7.31117 9.46739 8.02162C9.46739 8.73228 8.89135 9.30811 8.18131 9.30811C7.47107 9.30811 6.89503 8.73228 6.89503 8.02162ZM12.7274 8.02162C12.7274 7.31138 13.3038 6.73534 14.0141 6.73534C14.7241 6.73534 15.3002 7.31117 15.3002 8.02162C15.3002 8.73228 14.7243 9.30811 14.0141 9.30811C13.3038 9.30811 12.7274 8.73228 12.7274 8.02162ZM15.7683 13.2898C14.9712 15.1332 13.1043 16.3243 11.0126 16.3243C8.8758 16.3243 6.99792 15.1272 6.22834 13.2744C6.09642 12.9573 6.24681 12.593 6.56438 12.4611C6.64238 12.4289 6.72328 12.4136 6.80293 12.4136C7.04687 12.4136 7.27836 12.5577 7.37772 12.7973C7.95376 14.1842 9.38048 15.0799 11.0126 15.0799C12.6077 15.0799 14.0261 14.1836 14.626 12.7959C14.7625 12.4804 15.1288 12.335 15.4441 12.4717C15.7594 12.6084 15.9048 12.9745 15.7683 13.2898Z" fill="#707DB7"/>
+                        </svg>
+
+                        <!-- svg      -->
+                    </button>
+                    <button class="btn" type="button">
+                         <!-- svg  -->
+                         <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M11 0.289062C4.92455 0.289062 0 5.08402 0 10.9996C0 16.9152 4.92455 21.7101 11 21.7101C17.0755 21.7101 22 16.9145 22 10.9996C22 5.08472 17.0755 0.289062 11 0.289062ZM11 20.3713C5.68423 20.3713 1.375 16.1755 1.375 10.9996C1.375 5.82371 5.68423 1.62788 11 1.62788C16.3158 1.62788 20.625 5.82371 20.625 10.9996C20.625 16.1755 16.3158 20.3713 11 20.3713ZM15.125 10.3302H11.6875V6.98314C11.6875 6.61363 11.3795 6.31373 11 6.31373C10.6205 6.31373 10.3125 6.61363 10.3125 6.98314V10.3302H6.875C6.4955 10.3302 6.1875 10.6301 6.1875 10.9996C6.1875 11.3691 6.4955 11.669 6.875 11.669H10.3125V15.016C10.3125 15.3855 10.6205 15.6854 11 15.6854C11.3795 15.6854 11.6875 15.3855 11.6875 15.016V11.669H15.125C15.5045 11.669 15.8125 11.3691 15.8125 10.9996C15.8125 10.6301 15.5045 10.3302 15.125 10.3302Z" fill="#707DB7"/>
+                        </svg>
+
+                         <!-- svg  -->
+                         <input type="file">
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--/### CHAT_MESSAGE_BOX  ### -->
+
+<div id="back-top" style="display: none;">
+    <a title="Go to Top" href="#">
+        <i class="ti-angle-up"></i>
+    </a>
+</div>
+
+<!-- footer  -->
+<script src="https://demo.dashboardpack.com/cryptocurrency-html/js/jquery-3.4.1.min.js"></script>
+<!-- popper js -->
+<script src="https://demo.dashboardpack.com/cryptocurrency-html/js/popper.min.js"></script>
+<!-- bootstarp js -->
+<script src="https://demo.dashboardpack.com/cryptocurrency-html/js/bootstrap.min.js"></script>
+<!-- sidebar menu  -->
+<script src="https://demo.dashboardpack.com/cryptocurrency-html/js/metisMenu.js"></script>
+<!-- waypoints js -->
+<script src="https://demo.dashboardpack.com/cryptocurrency-html/vendors/count_up/jquery.waypoints.min.js"></script>
+<!-- waypoints js -->
+<script src="https://demo.dashboardpack.com/cryptocurrency-html/vendors/chartlist/Chart.min.js"></script>
+<!-- counterup js -->
+<script src="https://demo.dashboardpack.com/cryptocurrency-html/vendors/count_up/jquery.counterup.min.js"></script>
+
+<!-- nice select -->
+<script src="jquery.nice-select.min.js"></script>
+<!-- owl carousel -->
+<script src="https://demo.dashboardpack.com/cryptocurrency-html/vendors/owl_carousel/js/owl.carousel.min.js"></script>
+
+<!-- responsive table -->
+<script src="https://demo.dashboardpack.com/cryptocurrency-html/vendors/datatable/js/jquery.dataTables.min.js"></script>
+<script src="https://demo.dashboardpack.com/cryptocurrency-html/vendors/datatable/js/dataTables.responsive.min.js"></script>
+<script src="https://demo.dashboardpack.com/cryptocurrency-html/vendors/datatable/js/dataTables.buttons.min.js"></script>
+<script src="https://demo.dashboardpack.com/cryptocurrency-html/vendors/datatable/js/buttons.flash.min.js"></script>
+<script src="https://demo.dashboardpack.com/cryptocurrency-html/vendors/datatable/js/jszip.min.js"></script>
+<script src="https://demo.dashboardpack.com/cryptocurrency-html/vendors/datatable/js/pdfmake.min.js"></script>
+<script src="https://demo.dashboardpack.com/cryptocurrency-html/vendors/datatable/js/vfs_fonts.js"></script>
+<script src="https://demo.dashboardpack.com/cryptocurrency-html/vendors/datatable/js/buttons.html5.min.js"></script>
+<script src="https://demo.dashboardpack.com/cryptocurrency-html/vendors/datatable/js/buttons.print.min.js"></script>
+
+<!-- datepicker  -->
+<script src="https://demo.dashboardpack.com/cryptocurrency-html/vendors/datepicker/datepicker.js"></script>
+<script src="https://demo.dashboardpack.com/cryptocurrency-html/vendors/datepicker/datepicker.en.js"></script>
+<script src="https://demo.dashboardpack.com/cryptocurrency-html/vendors/datepicker/datepicker.custom.js"></script>
+
+<script src="https://demo.dashboardpack.com/cryptocurrency-html/js/chart.min.js"></script>
+<script src="https://demo.dashboardpack.com/cryptocurrency-html/vendors/chartjs/roundedBar.min.js"></script>
+
+<!-- progressbar js -->
+<script src="https://demo.dashboardpack.com/cryptocurrency-html/vendors/progressbar/jquery.barfiller.js"></script>
+<!-- tag input -->
+<script src="https://demo.dashboardpack.com/cryptocurrency-html/vendors/tagsinput/tagsinput.js"></script>
+<!-- text editor js -->
+<script src="https://demo.dashboardpack.com/cryptocurrency-html/vendors/text_editor/summernote-bs4.js"></script>
+<script src="https://demo.dashboardpack.com/cryptocurrency-html/vendors/am_chart/amcharts.js"></script>
+
+<!-- scrollabe  -->
+<script src="https://demo.dashboardpack.com/cryptocurrency-html/vendors/scroll/perfect-scrollbar.min.js"></script>
+<script src="https://demo.dashboardpack.com/cryptocurrency-html/vendors/scroll/scrollable-custom.js"></script>
+
+<!-- vector map  -->
+<script src="https://demo.dashboardpack.com/cryptocurrency-html/vendors/vectormap-home/vectormap-2.0.2.min.js"></script>
+<script src="https://demo.dashboardpack.com/cryptocurrency-html/vendors/vectormap-home/vectormap-world-mill-en.js"></script>
+
+<!-- apex chrat  -->
+<script src="https://demo.dashboardpack.com/cryptocurrency-html/vendors/apex_chart/apex-chart2.js"></script>
+<script src="https://demo.dashboardpack.com/cryptocurrency-html/vendors/apex_chart/apex_dashboard.js"></script>
+
+<!-- <script src="https://demo.dashboardpack.com/cryptocurrency-html/vendors/echart/echarts.min.js"></script> -->
+
+
+<script src="https://demo.dashboardpack.com/cryptocurrency-html/vendors/chart_am/core.js"></script>
+<script src="https://demo.dashboardpack.com/cryptocurrency-html/vendors/chart_am/charts.js"></script>
+<script src="https://demo.dashboardpack.com/cryptocurrency-html/vendors/chart_am/animated.js"></script>
+<script src="https://demo.dashboardpack.com/cryptocurrency-html/vendors/chart_am/kelly.js"></script>
+<script src="https://demo.dashboardpack.com/cryptocurrency-html/vendors/chart_am/chart-custom.js"></script>
+<!-- custom js -->
+<script src="https://demo.dashboardpack.com/cryptocurrency-html/js/dashboard_init.js"></script>
+<script src="https://demo.dashboardpack.com/cryptocurrency-html/js/custom.js"></script>
+
+</body>
+</html>
